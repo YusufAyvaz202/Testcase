@@ -1,11 +1,15 @@
-﻿using UnityEngine;
+﻿using Managers;
+using UnityEngine;
 using UnityEngine.InputSystem;
 namespace Controllers
 {
     public class UnitController : MonoBehaviour
     {
+        [Header("Input Action References")]
         [SerializeField] private InputActionReference mousePositionActionReference;
         [SerializeField] private InputActionReference mouseClickActionReference;
+        
+        [Header("Parameters")]
         private Vector2 mousePosition;
 
         private void OnEnable()
@@ -16,18 +20,21 @@ namespace Controllers
 
         private void Awake()
         {
-            mousePositionActionReference.action.performed += OnActionPerformed;
-            mouseClickActionReference.action.performed += Click;
+            mousePositionActionReference.action.performed += ReadMousePosition;
+            mouseClickActionReference.action.performed += SelectUnit;
         }
 
-        private void Click(InputAction.CallbackContext obj)
+        private void SelectUnit(InputAction.CallbackContext obj)
         {
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
             Physics.Raycast(ray, out RaycastHit hit);
-            Debug.Log("Clicked on " + hit.collider.gameObject.name);
+            if (hit.collider.gameObject.TryGetComponent(out BaseUnit unit))
+            {
+                EventManager.OnUnitSelected?.Invoke(unit);
+            }
         }
 
-        private void OnActionPerformed(InputAction.CallbackContext obj)
+        private void ReadMousePosition(InputAction.CallbackContext obj)
         {
             mousePosition = obj.ReadValue<Vector2>();
         }
@@ -36,6 +43,9 @@ namespace Controllers
         {
             mousePositionActionReference.action.Disable();
             mouseClickActionReference.action.Disable();
+            
+            mousePositionActionReference.action.performed -= ReadMousePosition;
+            mouseClickActionReference.action.performed -= SelectUnit;
         }
     }
 }
