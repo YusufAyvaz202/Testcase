@@ -6,6 +6,7 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
     [Header("Move Parameters")]
     private Vector3 targetPosition;
     private bool isMoving;
+    private float remainingDistance;
 
     [Header("Unit Stats")]
     [SerializeField] protected float _health;
@@ -29,10 +30,18 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
         Debug.Log("Attacking with weapon!");
     }
 
-    public void MoveStart(Vector3 direction)
+    public void MoveStart(Vector3 direction, bool isTarget)
     {
         Debug.Log($"Moving in direction: {direction}");
         targetPosition = direction;
+        if (isTarget)
+        {
+            remainingDistance = AttackRange;
+        }
+        else
+        {
+            remainingDistance = 0.1f;
+        }
         isMoving = true;
     }
 
@@ -44,7 +53,7 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
             direction.y = 0;
             float distance = Vector3.Distance(transform.position, targetPosition);
 
-            if (distance > 0.1f)
+            if (distance > remainingDistance)
             {
                 _rigidbody.MovePosition(transform.position + direction * (moveSpeed * Time.deltaTime));
             }

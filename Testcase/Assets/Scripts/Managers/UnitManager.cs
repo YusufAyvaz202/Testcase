@@ -7,7 +7,7 @@ namespace Managers
         [Header("Input Action References")]
         [SerializeField] private InputActionReference mousePositionActionReference;
         [SerializeField] private InputActionReference _moveActionReference;
-        
+
         [Header("Parameters")]
         [SerializeField] private BaseUnit _selectedUnit;
         private Vector2 mousePosition;
@@ -21,7 +21,7 @@ namespace Managers
         private void Awake()
         {
             EventManager.OnUnitSelected += OnUnitSelected;
-            
+
             // Subscribe to the move action
             _moveActionReference.action.started += Move;
             _moveActionReference.action.performed += Move;
@@ -40,20 +40,28 @@ namespace Managers
         {
             if (_selectedUnit == null) return;
 
-           Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-           if (Physics.Raycast(ray, out RaycastHit hit))
-           {
-               _selectedUnit.MoveStart(hit.point);
-           }
+            Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Debug.Log(hit.collider.name);
+                if (hit.collider.gameObject.CompareTag("Target"))
+                {
+                    _selectedUnit.MoveStart(hit.collider.gameObject.transform.position, true);
+                }
+                else
+                {
+                    _selectedUnit.MoveStart(hit.point, false);
+                }
+            }
         }
 
         private void OnUnitSelected(BaseUnit unit)
         {
             // Deselect the previously selected unit
             DeSelectPreviouslySelectedUnits();
-            
+
             Debug.Log("Unit selected: " + unit.name);
-            
+
             _selectedUnit = unit;
             if (_selectedUnit != null)
             {
@@ -74,7 +82,7 @@ namespace Managers
             _moveActionReference.action.Disable();
             mousePositionActionReference.action.Disable();
             EventManager.OnUnitSelected -= OnUnitSelected;
-            
+
             // Unsubscribe from the move action
             _moveActionReference.action.started -= Move;
             _moveActionReference.action.performed -= Move;

@@ -6,7 +6,7 @@
         {
             Damage = 5f;
             AttackSpeed = 0.5f;
-            AttackRange = 10f;
+            AttackRange = 3f;
         }
     }
 }
