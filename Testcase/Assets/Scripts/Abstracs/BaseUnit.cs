@@ -15,12 +15,10 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
     [SerializeField] protected float _health;
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected UnitWeaponSO unitWeaponSO;
-    private readonly Color unSelectedColor = Color.yellow;
-    private readonly Color selectedColor = Color.green;
 
     [Header("Properties")]
-    public Color UnselectedColor => unSelectedColor;
-    public Color SelectedColor => selectedColor;
+    public Color UnselectedColor { get; } = Color.yellow;
+    public Color SelectedColor { get; } = Color.green;
 
     [Header("Components")]
     [SerializeField] private Rigidbody _rigidbody;
@@ -74,7 +72,7 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
 
             if (distance > remainingDistance)
             {
-                _rigidbody.MovePosition(transform.position + direction * (moveSpeed * Time.deltaTime));
+                _rigidbody.MovePosition(transform.position + direction * (moveSpeed * Time.fixedDeltaTime));
             }
             else
             {
@@ -83,7 +81,7 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         Move();
     }
