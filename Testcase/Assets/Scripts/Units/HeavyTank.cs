@@ -2,11 +2,11 @@
 {
     public class HeavyTank : BaseUnit
     {
-        HeavyTank()
+        void Awake()
         {
-            Damage = 20f;
-            AttackSpeed = 1.5f;
-            AttackRange = 6f;
+            Damage = unitWeaponSO.Damage;
+            AttackSpeed = unitWeaponSO.AttackSpeed;
+            AttackRange = unitWeaponSO.AttackRange;
         }
     }
 }

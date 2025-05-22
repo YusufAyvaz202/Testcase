@@ -2,11 +2,11 @@
 {
     public class StrikerBike : BaseUnit
     {
-        StrikerBike()
+        void Awake()
         {
-            Damage = 5f;
-            AttackSpeed = 0.5f;
-            AttackRange = 3f;
+            Damage = unitWeaponSO.Damage;
+            AttackSpeed = unitWeaponSO.AttackSpeed;
+            AttackRange = unitWeaponSO.AttackRange;
         }
     }
 }

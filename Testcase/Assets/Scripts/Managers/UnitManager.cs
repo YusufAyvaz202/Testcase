@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Interfaces;
+using UnityEngine;
 using UnityEngine.InputSystem;
 namespace Managers
 {
@@ -43,10 +44,11 @@ namespace Managers
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Debug.Log(hit.collider.name);
-                if (hit.collider.gameObject.CompareTag("Target"))
+                var target = hit.collider.gameObject;
+                if (target.CompareTag("Target"))
                 {
-                    _selectedUnit.MoveStart(hit.collider.gameObject.transform.position, true);
+                    _selectedUnit.MoveStart(target.transform.position, true);
+                    _selectedUnit.Attack(target.GetComponent<IDamageable>());
                 }
                 else
                 {
@@ -65,7 +67,7 @@ namespace Managers
             _selectedUnit = unit;
             if (_selectedUnit != null)
             {
-                _selectedUnit.GetComponent<Renderer>().material.color = Color.white;
+                _selectedUnit.GetComponent<Renderer>().material.color = _selectedUnit.SelectedColor;
             }
         }
 
@@ -73,7 +75,7 @@ namespace Managers
         {
             if (_selectedUnit != null)
             {
-                _selectedUnit.GetComponent<Renderer>().material.color = _selectedUnit.MaterialColor;
+                _selectedUnit.GetComponent<Renderer>().material.color = _selectedUnit.UnselectedColor;
             }
         }
 

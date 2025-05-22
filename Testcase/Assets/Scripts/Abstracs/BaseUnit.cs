@@ -1,20 +1,26 @@
+using System.Collections;
+using Interfaces;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public abstract class BaseUnit : MonoBehaviour, IWeapon
 {
-    [Header("Move Parameters")]
+    [Header("Move & Attack Parameters")]
     private Vector3 targetPosition;
-    private bool isMoving;
     private float remainingDistance;
+    private bool isAttacking;
+    private bool isMoving;
 
     [Header("Unit Stats")]
     [SerializeField] protected float _health;
     [SerializeField] protected float moveSpeed;
-    [SerializeField] protected Color materialColor;
+    [SerializeField] protected UnitWeaponSO unitWeaponSO;
+    private readonly Color unSelectedColor = Color.yellow;
+    private readonly Color selectedColor = Color.green;
 
     [Header("Properties")]
-    public Color MaterialColor => materialColor;
+    public Color UnselectedColor => unSelectedColor;
+    public Color SelectedColor => selectedColor;
 
     [Header("Components")]
     [SerializeField] private Rigidbody _rigidbody;
@@ -24,10 +30,20 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
     public float AttackSpeed { get; set; }
     public float AttackRange { get; set; }
 
-    public void Attack()
+    public void Attack(IDamageable target)
     {
         // Implement attack logic here
         Debug.Log("Attacking with weapon!");
+        StartCoroutine(nameof(Attacking), target);
+    }
+
+    private IEnumerator Attacking(IDamageable target)
+    {
+        while (isAttacking)
+        {
+            target.TakeDamage(Damage);
+            yield return new WaitForSeconds(AttackSpeed);
+        }
     }
 
     public void MoveStart(Vector3 direction, bool isTarget)
@@ -37,12 +53,15 @@ public abstract class BaseUnit : MonoBehaviour, IWeapon
         if (isTarget)
         {
             remainingDistance = AttackRange;
+            isAttacking = true;
         }
         else
         {
             remainingDistance = 0.1f;
+            isAttacking = false;  
         }
         isMoving = true;
+        transform.LookAt(new Vector3(targetPosition.x, transform.position.y, targetPosition.z));
     }
 
     private void Move()

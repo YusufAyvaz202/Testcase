@@ -1,16 +1,20 @@
-﻿using UnityEngine;
+﻿using Interfaces;
+using UnityEngine;
 namespace Abstracs
 {
-    public class BaseBuilding : MonoBehaviour
+    public class BaseBuilding : MonoBehaviour, IDamageable
     {
         [Header("Building Stats")]
         [SerializeField] protected float _health;
+        private readonly Color destructionColor = Color.red;
 
-        protected void TakeDamage(float damage)
+        public void TakeDamage(float damage)
         {
+            if (_health <= 0) return; 
             _health -= damage;
             if (_health <= 0)
             {
+                _health = 0;
                 DestroyBuilding();
             }
         }
@@ -19,7 +23,9 @@ namespace Abstracs
         {
             // Implement destruction logic here
             Debug.Log("Building destroyed!");
-            Destroy(gameObject);
+            GetComponent<MeshRenderer>().material.color = destructionColor;
+            GetComponent<Collider>().enabled = false;
+            enabled = false;
         }
     }
 }
